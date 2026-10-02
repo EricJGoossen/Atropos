@@ -143,8 +143,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # Threshold is 0 (report-only) until the real test suite exists --
-      # scripts/check-coverage.sh's own default is 80. Raise this as
-      # tests/ grows past the current smoke tests; see README.md.
+      # Enforces scripts/check-coverage.sh's default minimum (80% line
+      # coverage of components/*/src/).
       - name: Check coverage
-        run: ./scripts/check-coverage.sh 0
+        run: ./scripts/check-coverage.sh
