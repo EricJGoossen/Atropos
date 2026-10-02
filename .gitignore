@@ -1,6 +1,7 @@
 .cache/
 build/
 build-tests/
+build-coverage/
 compile_commands.json
 sdkconfig
 sdkconfig.old
