@@ -1,0 +1,27 @@
+{
+  "name": "Arm firmware (ESP-IDF)",
+  "build": { "dockerfile": "Dockerfile" },
+  "remoteUser": "root",
+  "postCreateCommand": "git config core.hooksPath .githooks && git config --global --add safe.directory '*'",
+  // Lets the container reach the host's serial bridge (see README) at
+  // host.docker.internal on Linux too; harmless on macOS/Windows.
+  "runArgs": ["--add-host=host.docker.internal:host-gateway"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "espressif.esp-idf-extension",
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.cmake-tools",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "xaver.clang-format",
+        "redhat.vscode-yaml",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "ajshort.include-autocomplete",
+        "streetsidesoftware.code-spell-checker",
+        "anthropic.claude-code"
+      ]
+    }
+  }
+}

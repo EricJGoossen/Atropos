@@ -1,0 +1,5 @@
+CompileFlags:
+  CompilationDatabase: build
+  # clangd doesn't understand the xtensa-gcc-only -m*/-f* flags in IDF's
+  # compile_commands.json and would report false errors on them.
+  Remove: [-m*, -f*]

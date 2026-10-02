@@ -1,0 +1,8 @@
+.cache/
+build/
+build-tests/
+compile_commands.json
+sdkconfig
+sdkconfig.old
+managed_components/
+.claude/

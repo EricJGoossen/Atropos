@@ -1,0 +1,10 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+# --- Intentional deviations from Google style ---
+AlignAfterOpenBracket: BlockIndent
+BinPackArguments: false
+BinPackParameters: false
+DerivePointerAlignment: false
+...

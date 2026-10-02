@@ -1,0 +1,58 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "idf-build",
+            "type": "shell",
+            "command": "idf.py build",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "check-format",
+            "type": "shell",
+            "command": "./scripts/check-format.sh",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "check-tidy",
+            "type": "shell",
+            "command": "cmake --build build --target check-tidy",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Needs an idf-build first for build/compile_commands.json"
+        },
+        {
+            "label": "check-tidy-analyzer",
+            "type": "shell",
+            "command": "cmake --build build --target check-tidy-analyzer",
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Needs an idf-build first for build/compile_commands.json"
+        },
+        {
+            "label": "host-tests-configure",
+            "type": "shell",
+            "command": "cmake -S tests -B build-tests -G Ninja",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "host-tests-run",
+            "type": "shell",
+            "command": "cmake --build build-tests && ctest --test-dir build-tests --output-on-failure",
+            "group": { "kind": "test", "isDefault": true },
+            "dependsOn": ["host-tests-configure"],
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "check-coverage",
+            "type": "shell",
+            "command": "./scripts/check-coverage.sh",
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Pass a number, e.g. './scripts/check-coverage.sh 60', to change the minimum"
+        }
+    ]
+}

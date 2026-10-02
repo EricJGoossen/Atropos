@@ -1,0 +1,41 @@
+# Broader than the root .clang-tidy's curated allowlist, on purpose: this
+# governs tests/*.cpp only (clang-tidy resolves the nearest .clang-tidy by
+# walking up from the file being checked, so test TUs pick this up instead
+# of the root config). Test code isn't shipped, isn't safety- or
+# performance-critical, and gets read far less often than library code, so
+# there's less value in curating a narrow category list the way the root
+# config does -- enabling (almost) everything and excluding only what's
+# structurally inapplicable or actively wrong for test code is cheaper to
+# maintain here.
+#
+# clang-analyzer-* excluded the same way the root config excludes it: run
+# separately, see .clang-tidy-analyzer.
+---
+Checks: >
+    *,
+    -clang-analyzer-*,
+    -altera-*,
+    -android-*,
+    -darwin-*,
+    -fuchsia-*,
+    -linuxkernel-*,
+    -llvm-*,
+    -llvmlibc-*,
+    -objc-*,
+    -zircon-*,
+    -abseil-*,
+    -boost-*,
+    -mpi-*,
+    -google-objc-*,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -readability-magic-numbers,
+    -readability-identifier-length,
+    -readability-named-parameter,
+    -modernize-use-trailing-return-type,
+    -misc-non-private-member-variables-in-classes,
+    -cppcoreguidelines-non-private-member-variables-in-classes,
+    -cppcoreguidelines-avoid-non-const-global-variables,
+    -fuchsia-default-arguments-calls,
+    -misc-const-correctness
+
+HeaderFilterRegex: '.*'

@@ -1,0 +1,32 @@
+{
+  "idf.espIdfPath": "/opt/esp/idf",
+  "idf.toolsPath": "/opt/esp",
+  "idf.gitPath": "/usr/bin/git",
+  "idf.flashType": "UART",
+  // Default: RFC2217 serial bridge on the host (works on Windows/macOS/Linux).
+  // Linux users with direct passthrough can override this in *user* settings
+  // with e.g. "/dev/ttyUSB0".
+  "idf.port": "rfc2217://host.docker.internal:4000?ign_set_control",
+  // cpptools is kept installed (useful for its debugger/other pack features)
+  // but clangd is the language server here, so cpptools' own IntelliSense
+  // engine is turned off to avoid duplicate/conflicting squiggles.
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.arguments": [
+    "--compile-commands-dir=${workspaceFolder}/build",
+    "--query-driver=/opt/esp/tools/**",
+    "--background-index"
+  ],
+  "editor.formatOnSave": true,
+  // The container installs clang-format at /usr/bin; pin it here so a
+  // host-side user setting (e.g. a Homebrew /usr/local/bin path) can't break it.
+  "clang-format.executable": "/usr/bin/clang-format",
+  "[c]": {
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": true
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": true
+  },
+  "idf.currentSetup": "/opt/esp/idf"
+}
