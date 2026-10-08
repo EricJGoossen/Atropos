@@ -1,2 +1,4 @@
-*.sh text eol=lf
-.githooks/* text eol=lf
+# Everything is built and run inside the Linux devcontainer/CI image, so
+# force LF on checkout everywhere -- a CRLF shebang line ("bash\r") breaks
+# scripts and git hooks even when the repo is cloned on Windows.
+* text=auto eol=lf
