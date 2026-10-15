@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Check formatting (main/, components/)
+      - name: Check formatting (main/, components/, tests/)
         run: ./scripts/check-format.sh
 
   build:

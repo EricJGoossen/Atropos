@@ -32,10 +32,13 @@ CONFIG_FILE="$ROOT_DIR/.clang-tidy-analyzer"
 FLAGS_HELPER="$ROOT_DIR/scripts/_compile_flags_for.py"
 CLANG_DB_HELPER="$ROOT_DIR/scripts/_clang_compile_db.py"
 
-if ! command -v clang-tidy >/dev/null 2>&1; then
-    echo "clang-tidy not found in PATH." >&2
-    exit 127
-fi
+# See check-tidy.sh for why firmware and tests/ use different clang-tidys.
+for tool in clang-tidy esp-clang-tidy; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "$tool not found in PATH (see .devcontainer/Dockerfile)." >&2
+        exit 127
+    fi
+done
 
 if [ ! -f "$COMPILE_DB" ]; then
     echo "compile_commands.json not found at $COMPILE_DB -- run 'idf.py build' first." >&2
@@ -179,8 +182,9 @@ CHECKED_COUNT="${#TO_RUN_FILES[@]}"
 # checked via a bare `if` after the fact.
 run_check() {
     local file="$1" build_dir="$2" idx="$3"
-    local rc=0
-    clang-tidy -p "$build_dir" --quiet \
+    local rc=0 tidy=clang-tidy
+    [ "$build_dir" = "$FIRMWARE_TIDY_DB" ] && tidy=esp-clang-tidy
+    "$tidy" -p "$build_dir" --quiet \
         --config-file="$CONFIG_FILE" \
         --header-filter="$HEADER_FILTER" \
         --warnings-as-errors='*' \

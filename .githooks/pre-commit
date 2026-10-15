@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Blocks the commit if main/ or components/ isn't clang-format clean. Fast
-# (sub-second, no build needed); the full build runs in CI instead
+# Blocks the commit if main/, components/, or tests/ isn't clang-format
+# clean. Fast (sub-second, no build needed); the full build runs in CI instead
 # (see .github/workflows/ci.yml).
 #
 # Enabled via `git config core.hooksPath .githooks` -- set automatically
@@ -9,7 +9,20 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if ! "$ROOT_DIR/scripts/check-format.sh"; then
+rc=0
+"$ROOT_DIR/scripts/check-format.sh" || rc=$?
+
+# 127 is check-format.sh's "clang-format not in PATH" -- e.g. committing
+# from the host instead of the devcontainer. Say so, rather than reporting
+# it as formatting issues.
+if [ "$rc" -eq 127 ]; then
+    echo "" >&2
+    echo "commit blocked: clang-format isn't installed, so formatting couldn't be checked." >&2
+    echo "commit from the devcontainer, or install it on this machine (CI uses" >&2
+    echo "LLVM 18; on Ubuntu 24.04: 'sudo apt install clang-format'). bypass with" >&2
+    echo "'git commit --no-verify'." >&2
+    exit 1
+elif [ "$rc" -ne 0 ]; then
     echo "" >&2
     echo "commit blocked: clang-format found formatting issues (above)." >&2
     echo "fix with 'clang-format -i <file>', or bypass with 'git commit --no-verify'." >&2

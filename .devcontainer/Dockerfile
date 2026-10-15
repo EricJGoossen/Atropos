@@ -42,6 +42,15 @@ RUN wget https://apt.llvm.org/llvm.sh -O /tmp/llvm.sh \
     && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-18 100 \
     && rm -rf /var/lib/apt/lists/* /tmp/llvm.sh
 
+# Espressif's clang fork, for linting firmware TUs only: upstream clang has
+# no xtensa target, so it can't parse IDF's arch headers (xtensa inline asm
+# etc.). Installed under its own IDF_TOOLS_PATH so export.sh doesn't put it
+# on PATH -- it would shadow clang-tidy-18 above, and it has no host target
+# for tests/. Only its clang-tidy is exposed, as esp-clang-tidy.
+RUN IDF_TOOLS_PATH=/opt/esp-clang python3 "$IDF_PATH/tools/idf_tools.py" install esp-clang \
+    && ln -s /opt/esp-clang/tools/esp-clang/*/esp-clang/bin/clang-tidy /usr/local/bin/esp-clang-tidy \
+    && rm -rf /opt/esp-clang/dist
+
 # VS Code terminals don't go through the image ENTRYPOINT (which is what
 # normally activates the IDF environment), so do it for interactive shells.
 RUN echo '. $IDF_PATH/export.sh > /dev/null 2>&1' >> ~/.bashrc \

@@ -196,3 +196,18 @@ CheckOptions:
     # Macros — Google style: MACRO_CASE
     - key: readability-identifier-naming.MacroDefinitionCase
       value: UPPER_CASE
+
+    # ESP-IDF / FreeRTOS -- headers outside this repo we don't control.
+    # ESP_ERROR_CHECK (and most IDF macros) wrap their body in do { } while (0).
+    - key: cppcoreguidelines-avoid-do-while.IgnoreMacros
+      value: true
+    # FreeRTOS requires #include "freertos/FreeRTOS.h" before any other
+    # FreeRTOS header, and its types/macros actually come from IDF-internal
+    # port/hal/soc headers -- so don't make include-cleaner demand (or
+    # remove) IDF headers. Everything runs in the CI image, where IDF lives
+    # under /opt/esp.
+    - key: misc-include-cleaner.IgnoreHeaders
+      value: '/opt/esp/.*'
+    # FreeRTOS.h <-> idf_additions.h include each other by design.
+    - key: misc-header-include-cycle.IgnoredFilesList
+      value: 'FreeRTOS\.h;idf_additions\.h'

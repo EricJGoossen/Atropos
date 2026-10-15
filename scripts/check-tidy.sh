@@ -50,10 +50,14 @@ CACHE_FILE="$BUILD_DIR/.check-tidy-cache"
 FLAGS_HELPER="$ROOT_DIR/scripts/_compile_flags_for.py"
 CLANG_DB_HELPER="$ROOT_DIR/scripts/_clang_compile_db.py"
 
-if ! command -v clang-tidy >/dev/null 2>&1; then
-    echo "clang-tidy not found in PATH." >&2
-    exit 127
-fi
+# clang-tidy lints tests/ (host code); esp-clang-tidy lints the firmware
+# TUs, since only Espressif's clang fork can parse IDF's xtensa headers.
+for tool in clang-tidy esp-clang-tidy; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "$tool not found in PATH (see .devcontainer/Dockerfile)." >&2
+        exit 127
+    fi
+done
 
 if [ ! -f "$COMPILE_DB" ]; then
     echo "compile_commands.json not found at $COMPILE_DB -- run 'idf.py build' first." >&2
@@ -223,11 +227,12 @@ CHECKED_COUNT="${#TO_RUN_FILES[@]}"
 # job happens to finish first.
 run_check() {
     local file="$1" header_filter="$2" build_dir="$3" idx="$4"
-    local rc=0
+    local rc=0 tidy=clang-tidy
+    [ "$build_dir" = "$FIRMWARE_TIDY_DB" ] && tidy=esp-clang-tidy
     # `set -e` (inherited from the parent script) would otherwise kill this
     # background subshell the instant clang-tidy exits non-zero, skipping
     # the status write below and silently losing the result for that file.
-    clang-tidy -p "$build_dir" --quiet \
+    "$tidy" -p "$build_dir" --quiet \
         --header-filter="$header_filter" \
         --warnings-as-errors='*' \
         "$file" > "$RESULT_DIR/$idx.log" 2>&1 || rc=$?
