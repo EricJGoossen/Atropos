@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """Internal helper for scripts/check-tidy.sh and check-tidy-analyzer.sh.
 
-Writes a clang-tidy-compatible copy of ESP-IDF's compile_commands.json.
-The original is recorded for the xtensa cross gcc, which upstream clang
-(e.g. the pinned clang-tidy-18) can't consume as-is:
+Writes a clang-tidy-compatible copy of ESP-IDF's compile_commands.json,
+for esp-clang-tidy (Espressif's clang fork -- see .devcontainer/
+Dockerfile). The original is recorded for the xtensa cross gcc, which
+clang can't consume as-is. esp-clang does know the xtensa target (it's
+inferred from the compiler name, xtensa-esp32-elf-g++), but:
 
-- it has no xtensa target, so the triple implied by the compiler name
-  (xtensa-esp32-elf-g++) is an "unknown target triple" error. Each entry
-  is retargeted to riscv32-unknown-elf instead -- another 32-bit
-  bare-metal ELF target, close enough for lint purposes;
 - a handful of xtensa-gcc-only flags are "unknown argument" errors, so
   they're dropped (the same reason .clangd strips -m*/-f* for clangd);
 - clang doesn't know the cross gcc's built-in search paths (libstdc++,
@@ -27,8 +25,6 @@ import os
 import shlex
 import subprocess
 import sys
-
-CLANG_TARGET = "riscv32-unknown-elf"
 
 GCC_ONLY_FLAGS = {
     "-mlongcalls",
@@ -74,7 +70,7 @@ def main() -> int:
         if key not in system_dirs:
             system_dirs[key] = gcc_system_dirs(compiler, lang)
 
-        new_args = [compiler, f"--target={CLANG_TARGET}"]
+        new_args = [compiler]
         new_args += [a for a in args[1:] if a not in GCC_ONLY_FLAGS]
         for d in system_dirs[key]:
             new_args += ["-isystem", d]
