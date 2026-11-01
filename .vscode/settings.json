@@ -28,5 +28,14 @@
     "editor.defaultFormatter": "xaver.clang-format",
     "editor.formatOnSave": true
   },
-  "idf.currentSetup": "/opt/esp/idf"
+  "idf.currentSetup": "/opt/esp/idf",
+  "cSpell.words": [
+    "cmpr",
+    "gptimer",
+    "IRAM",
+    "mcpwm",
+    "NOLINTNEXTLINE",
+    "renameable",
+    "SRCS"
+  ]
 }

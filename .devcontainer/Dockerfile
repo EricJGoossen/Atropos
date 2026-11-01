@@ -57,3 +57,4 @@ RUN echo '. $IDF_PATH/export.sh > /dev/null 2>&1' >> ~/.bashrc \
     && echo "alias build='idf.py build'" >> ~/.bashrc
 
 ENV IDF_CCACHE_ENABLE=1
+ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
