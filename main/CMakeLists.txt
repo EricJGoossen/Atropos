@@ -1,7 +1,7 @@
 idf_component_register(
     SRCS
         "main.cpp"
-        "getMotorPWM.cpp"
+        "GetMotorPWM.cpp"
 
     INCLUDE_DIRS
         "."

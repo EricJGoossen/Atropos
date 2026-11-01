@@ -17,7 +17,6 @@ FROM espressif/idf:${IDF_VERSION}
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     ccache \
-    clangd-18 \
     cmake \
     gcovr \
     ninja-build \
@@ -39,8 +38,16 @@ RUN wget https://apt.llvm.org/llvm.sh -O /tmp/llvm.sh \
     && apt-get install -y --no-install-recommends clang-format-18 clang-tidy-18 \
     && update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 \
     && update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 \
-    && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-18 100 \
     && rm -rf /var/lib/apt/lists/* /tmp/llvm.sh
+
+# clangd comes from Espressif's LLVM fork rather than apt.llvm.org: upstream
+# clangd has no Xtensa target, so on IDF's compile_commands.json it fails
+# every file with "unknown target triple 'xtensa-esp32-unknown-elf'" and
+# IntelliSense shows nothing. esp-clang's version is whatever this IDF
+# release recommends.
+RUN python3 $IDF_PATH/tools/idf_tools.py install esp-clang \
+    && update-alternatives --install /usr/bin/clangd clangd \
+       "$(ls -d /opt/esp/tools/esp-clang/*/esp-clang/bin/clangd | head -n1)" 100
 
 # VS Code terminals don't go through the image ENTRYPOINT (which is what
 # normally activates the IDF environment), so do it for interactive shells.
